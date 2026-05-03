@@ -16,9 +16,9 @@ const PASSWORD_HLF = process.env.HLF_PASSWORD;
 
 // CONFIGURACIÓN HORARIOS LOCALES Y ROTACIÓN
 // HORARIOS_DIR permite apuntar a un disco persistente (ej. /data en Render).
-// Si no está seteada, se guarda en la raíz del proyecto (modo local).
-const HORARIOS_DIR = process.env.HORARIOS_DIR || process.cwd();
-const HORARIOS_FILE = path.join(HORARIOS_DIR, 'horarios.json');
+// Si no está seteada o no es escribible, cae a la raíz del proyecto.
+let HORARIOS_DIR = process.env.HORARIOS_DIR || process.cwd();
+let HORARIOS_FILE = path.join(HORARIOS_DIR, 'horarios.json');
 const PASSWORD_SINCRO = process.env.PASSWORD_SINCRO;
 
 if (!USERNAME || !PASSWORD_HLF || !PASSWORD_SINCRO) {
@@ -277,13 +277,29 @@ app.get('/api/archivo-excel-agentes', async (req, res) => {
 
 // --- 3. GESTIÓN DE HORARIOS Y ROTACIÓN EQUITATIVA ---
 
-const initHorarios = async () => {
+const ensureHorariosFile = async (dir) => {
+    const file = path.join(dir, 'horarios.json');
+    await fs.mkdir(dir, { recursive: true });
     try {
-        await fs.mkdir(HORARIOS_DIR, { recursive: true });
-        await fs.access(HORARIOS_FILE);
+        await fs.access(file);
     } catch {
         const initialTemplate = { whatsapp: [], callback: [] };
-        await fs.writeFile(HORARIOS_FILE, JSON.stringify(initialTemplate, null, 2));
+        await fs.writeFile(file, JSON.stringify(initialTemplate, null, 2));
+    }
+    return file;
+};
+
+const initHorarios = async () => {
+    try {
+        HORARIOS_FILE = await ensureHorariosFile(HORARIOS_DIR);
+    } catch (err) {
+        console.warn(`⚠️ No se pudo usar HORARIOS_DIR="${HORARIOS_DIR}" (${err.code || err.message}). Cayendo a process.cwd().`);
+        HORARIOS_DIR = process.cwd();
+        try {
+            HORARIOS_FILE = await ensureHorariosFile(HORARIOS_DIR);
+        } catch (err2) {
+            console.error(`🛑 Tampoco se pudo escribir en cwd: ${err2.message}. /api/horarios fallará hasta que se resuelva.`);
+        }
     }
     console.log(`📁 horarios.json -> ${HORARIOS_FILE}`);
 };
