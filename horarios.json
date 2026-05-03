@@ -1,0 +1,196 @@
+{
+  "whatsapp": [
+    {
+      "fecha": "04-05",
+      "agente": "Cea Briceño Diego",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "05-05",
+      "agente": "Ossandon Montoya Edith",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "06-05",
+      "agente": "Herrera Merida Johanna",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "07-05",
+      "agente": "Agudelo Viveros Lesli",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "08-05",
+      "agente": "Barón Barón Maria Cristina",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "11-05",
+      "agente": "Gonzalez González Yessenia",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "12-05",
+      "agente": "Herrera Barriga Paola",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "13-05",
+      "agente": "Manzanilla Rangel Adrian",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "14-05",
+      "agente": "Cea Briceño Diego",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "15-05",
+      "agente": "Ossandon Montoya Edith",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "18-05",
+      "agente": "Herrera Merida Johanna",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "19-05",
+      "agente": "Agudelo Viveros Lesli",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "20-05",
+      "agente": "Barón Barón Maria Cristina",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "22-05",
+      "agente": "Gonzalez González Yessenia",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "25-05",
+      "agente": "Herrera Barriga Paola",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "26-05",
+      "agente": "Manzanilla Rangel Adrian",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "27-05",
+      "agente": "Cea Briceño Diego",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "28-05",
+      "agente": "Ossandon Montoya Edith",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "29-05",
+      "agente": "Herrera Merida Johanna",
+      "reemplazo": ""
+    }
+  ],
+  "callback": [
+    {
+      "fecha": "04-05",
+      "agente": "Barón Barón Maria Cristina",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "05-05",
+      "agente": "Gonzalez González Yessenia",
+      "reemplazo": "Lesli hasta 8:30"
+    },
+    {
+      "fecha": "06-05",
+      "agente": "Herrera Barriga Paola",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "07-05",
+      "agente": "Manzanilla Rangel Adrian",
+      "reemplazo": "Cristina hasta 8:30"
+    },
+    {
+      "fecha": "08-05",
+      "agente": "Cea Briceño Diego",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "11-05",
+      "agente": "Ossandon Montoya Edith",
+      "reemplazo": "Paola hasta 8:30"
+    },
+    {
+      "fecha": "12-05",
+      "agente": "Herrera Merida Johanna",
+      "reemplazo": "Diego hasta 8:30"
+    },
+    {
+      "fecha": "13-05",
+      "agente": "Agudelo Viveros Lesli",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "14-05",
+      "agente": "Barón Barón Maria Cristina",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "15-05",
+      "agente": "Gonzalez González Yessenia",
+      "reemplazo": "Lesli hasta 8:30"
+    },
+    {
+      "fecha": "18-05",
+      "agente": "Herrera Barriga Paola",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "19-05",
+      "agente": "Manzanilla Rangel Adrian",
+      "reemplazo": "Cristina hasta 8:30"
+    },
+    {
+      "fecha": "20-05",
+      "agente": "Cea Briceño Diego",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "22-05",
+      "agente": "Ossandon Montoya Edith",
+      "reemplazo": "Paola hasta 8:30"
+    },
+    {
+      "fecha": "25-05",
+      "agente": "Herrera Merida Johanna",
+      "reemplazo": "Diego hasta 8:30"
+    },
+    {
+      "fecha": "26-05",
+      "agente": "Agudelo Viveros Lesli",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "27-05",
+      "agente": "Barón Barón Maria Cristina",
+      "reemplazo": ""
+    },
+    {
+      "fecha": "28-05",
+      "agente": "Gonzalez González Yessenia",
+      "reemplazo": "Lesli hasta 8:30"
+    },
+    {
+      "fecha": "29-05",
+      "agente": "Herrera Barriga Paola",
+      "reemplazo": ""
+    }
+  ]
+}
