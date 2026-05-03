@@ -15,7 +15,10 @@ const USERNAME = process.env.HLF_USERNAME;
 const PASSWORD_HLF = process.env.HLF_PASSWORD;
 
 // CONFIGURACIÓN HORARIOS LOCALES Y ROTACIÓN
-const HORARIOS_FILE = path.join(process.cwd(), 'horarios.json');
+// HORARIOS_DIR permite apuntar a un disco persistente (ej. /data en Render).
+// Si no está seteada, se guarda en la raíz del proyecto (modo local).
+const HORARIOS_DIR = process.env.HORARIOS_DIR || process.cwd();
+const HORARIOS_FILE = path.join(HORARIOS_DIR, 'horarios.json');
 const PASSWORD_SINCRO = process.env.PASSWORD_SINCRO;
 
 if (!USERNAME || !PASSWORD_HLF || !PASSWORD_SINCRO) {
@@ -276,11 +279,13 @@ app.get('/api/archivo-excel-agentes', async (req, res) => {
 
 const initHorarios = async () => {
     try {
+        await fs.mkdir(HORARIOS_DIR, { recursive: true });
         await fs.access(HORARIOS_FILE);
     } catch {
         const initialTemplate = { whatsapp: [], callback: [] };
         await fs.writeFile(HORARIOS_FILE, JSON.stringify(initialTemplate, null, 2));
     }
+    console.log(`📁 horarios.json -> ${HORARIOS_FILE}`);
 };
 initHorarios();
 
