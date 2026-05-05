@@ -9,6 +9,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Evitar que un fetch fallido (HLF inalcanzable, timeout, etc.) tire el proceso.
+process.on('unhandledRejection', (reason) => {
+    console.error('🚧 unhandledRejection:', reason?.message || reason);
+});
+process.on('uncaughtException', (err) => {
+    console.error('🚧 uncaughtException:', err?.message || err);
+});
+
+// Healthcheck (lo usa el keep-alive externo).
+app.get('/health', (req, res) => res.json({ ok: true, sessionActive: !!currentSessionId }));
+
 // CONFIGURACIÓN HLF (desde .env)
 const HLF_LOGIN_URL = process.env.HLF_LOGIN_URL || 'https://hlf.espex.cl/config/login/LoginFunction.php';
 const USERNAME = process.env.HLF_USERNAME;
@@ -90,22 +101,27 @@ const authenticateHLF = async () => {
 
 app.post('/api/llamadas', async (req, res) => {
     const { fechaDesde, fechaHasta } = req.body;
-    
+
     if (!currentSessionId) await authenticateHLF();
 
     const fetchDatos = async (sessionId) => {
-        const url = `https://hlf.espex.cl/config/apialodesk/llamadas_serverside_processing.php?fechaInicio=${fechaDesde}&fechaTermino=${fechaHasta}&estado=&sentido=0&tipo=0&campana=7&modulo=&draw=1&start=0&length=-1`;
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "accept": "application/json, text/javascript, */*; q=0.01",
-                "x-requested-with": "XMLHttpRequest",
-                "cookie": `PHPSESSID=${sessionId}`, 
-                "Referer": "https://hlf.espex.cl/pages/llamadase.php"
-            }
-        });
-        const text = await response.text();
-        try { return JSON.parse(text); } catch { return null; }
+        try {
+            const url = `https://hlf.espex.cl/config/apialodesk/llamadas_serverside_processing.php?fechaInicio=${fechaDesde}&fechaTermino=${fechaHasta}&estado=&sentido=0&tipo=0&campana=7&modulo=&draw=1&start=0&length=-1`;
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "accept": "application/json, text/javascript, */*; q=0.01",
+                    "x-requested-with": "XMLHttpRequest",
+                    "cookie": `PHPSESSID=${sessionId}`,
+                    "Referer": "https://hlf.espex.cl/pages/llamadase.php"
+                }
+            });
+            const text = await response.text();
+            try { return JSON.parse(text); } catch { return null; }
+        } catch (err) {
+            console.error('fetchDatos error:', err?.cause?.code || err?.message || err);
+            return null;
+        }
     };
 
     let data = await fetchDatos(currentSessionId);
@@ -115,26 +131,31 @@ app.post('/api/llamadas', async (req, res) => {
     }
 
     if (data && data.data) res.json(data);
-    else res.status(500).json({ error: "Fallo al conectar con HLF" });
+    else res.status(503).json({ error: "Fallo al conectar con HLF" });
 });
 
 app.get('/api/monitor', async (req, res) => {
     if (!currentSessionId) await authenticateHLF();
 
     const fetchMonitor = async (sessionId) => {
-        const url = 'https://hlf.espex.cl/config/monitores/ConfigMonitorAgentes.php';
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                "accept": "application/json, text/javascript, */*; q=0.01",
-                "x-requested-with": "XMLHttpRequest",
-                "cookie": `PHPSESSID=${sessionId}`,
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Referer": "https://hlf.espex.cl/"
-            }
-        });
-        const text = await response.text();
-        try { return JSON.parse(text); } catch { return null; }
+        try {
+            const url = 'https://hlf.espex.cl/config/monitores/ConfigMonitorAgentes.php';
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    "accept": "application/json, text/javascript, */*; q=0.01",
+                    "x-requested-with": "XMLHttpRequest",
+                    "cookie": `PHPSESSID=${sessionId}`,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Referer": "https://hlf.espex.cl/"
+                }
+            });
+            const text = await response.text();
+            try { return JSON.parse(text); } catch { return null; }
+        } catch (err) {
+            console.error('fetchMonitor error:', err?.cause?.code || err?.message || err);
+            return null;
+        }
     };
 
     let data = await fetchMonitor(currentSessionId);
@@ -144,7 +165,7 @@ app.get('/api/monitor', async (req, res) => {
     }
 
     if (data) res.json(data);
-    else res.status(500).json({ error: "Fallo en el monitor" });
+    else res.status(503).json({ error: "Fallo en el monitor" });
 });
 
 app.get('/api/reporte-agentes', async (req, res) => {
@@ -157,30 +178,35 @@ app.get('/api/reporte-agentes', async (req, res) => {
     if (!currentSessionId) await authenticateHLF();
 
     const fetchReporte = async (sessionId) => {
-        const url = `https://hlf.espex.cl/config/reportes/TablaReporteAgenteLlamadas.php?startDate=${startDate}&endDate=${endDate}`;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                "accept": "application/json, text/javascript, */*; q=0.01",
-                "x-requested-with": "XMLHttpRequest",
-                "cookie": `PHPSESSID=${sessionId}`,
-                "Referer": "https://hlf.espex.cl/pages/ReporteAgentes.php"
-            }
-        });
-        
-        const text = await response.text();
-        try { return JSON.parse(text); } catch { return null; }
+        try {
+            const url = `https://hlf.espex.cl/config/reportes/TablaReporteAgenteLlamadas.php?startDate=${startDate}&endDate=${endDate}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    "accept": "application/json, text/javascript, */*; q=0.01",
+                    "x-requested-with": "XMLHttpRequest",
+                    "cookie": `PHPSESSID=${sessionId}`,
+                    "Referer": "https://hlf.espex.cl/pages/ReporteAgentes.php"
+                }
+            });
+
+            const text = await response.text();
+            try { return JSON.parse(text); } catch { return null; }
+        } catch (err) {
+            console.error('fetchReporte error:', err?.cause?.code || err?.message || err);
+            return null;
+        }
     };
 
     let data = await fetchReporte(currentSessionId);
-    
+
     if (!data || !data.data) {
         const newSessionId = await authenticateHLF();
         if (newSessionId) data = await fetchReporte(newSessionId);
     }
 
     if (data && data.data) res.json(data);
-    else res.status(500).json({ error: "Fallo al obtener reporte de agentes" });
+    else res.status(503).json({ error: "Fallo al obtener reporte de agentes" });
 });
 
 // NUEVO ENDPOINT: Descargar y parsear el EXCEL de agentes
@@ -271,7 +297,7 @@ app.get('/api/archivo-excel-agentes', async (req, res) => {
     if (data) {
         res.json({ data: data.estados, detalle: data.detalle });
     } else {
-        res.status(500).json({ error: "Fallo al descargar o parsear el Excel de agentes" });
+        res.status(503).json({ error: "Fallo al descargar o parsear el Excel de agentes" });
     }
 });
 
